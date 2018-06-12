@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta content="width=device-width,initial-scale=1,user-scalable=0,minimum-scale=1,maximum-scale=1" name="viewport">
+
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			padding: 50px;
+			color: #555;
+			font-size: 1rem;
+			border-left: 5px dashed #ff1493;
+			line-height: 1.25;
+		}
+
+		#title { margin-bottom: 1em; }
+		#spacer { margin-bottom: 75vh; }
+
+		.grid {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
+			width: 100%;
+			max-width: 2000px;
+			background-color: #fff;
+		}
+
+		.grid--item {
+			position: relative;
+			width: calc(25% - 20px);
+			margin: 10px;
+		}
+
+		.grid--image {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+
+		.grid--item:after {
+			content: 'lazy src';
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background: rgba(0, 0, 0, .85);
+			color: #fff;
+			font-size: 1.25rem;
+			font-weight: 600;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity .3s ease;
+		}
+
+		.grid--item.has\:srcset:after { content: 'lazy srcset'; }
+		.grid--item:hover:after {
+			opacity: 1;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrapper" id="vue-app" v-cloak>
+		<h1 id="title">vue-blob-lazyload</h1>
+
+		<p id="spacer">
+			Images will begin loading as you scroll.<br>
+			Click <a href="https://github.com/Blobfolio/vue-blob-lazyload" target="_blank" rel="noopener">here</a> to return to the source code.
+		</p>
+
+		<div class="grid">
+			<div v-for="image in images" class="grid--item" v-bind:class="{ 'has:src' : image.src, 'has:srcset' : image.srcset }">
+				<img sizes="25vw" v-lazy="image" class="grid--image" alt="Tile" />
+			</div>
+		</div>
+
+	</div><!--#vue-app-->
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	<script src="js/vue-blob-lazyload.js"></script>
+	<script>
+		new Vue({
+			el: '#vue-app',
+			data: {
+				images: [
+					// Offsets are set to zero to make it a little more
+					// obvious images are loading late. In practice, a
+					// positive number (or the default 450) is probably
+					// what you'd want.
+
+					// Also worth noting: the corners for this demo use
+					// src, while the rest use srcset. There's no reason
+					// to use both in one area; this is just to verify
+					// each feature works as expected.
+					{ src: 'img/1x/0.jpg', offset: 0 },
+					{ srcset: 'img/1x/1.jpg 250w, img/2x/1.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/2.jpg 250w, img/2x/2.jpg 500w', offset: 0 },
+					{ src: 'img/1x/3.jpg', offset: 0 },
+					{ srcset: 'img/1x/4.jpg 250w, img/2x/4.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/5.jpg 250w, img/2x/5.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/6.jpg 250w, img/2x/6.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/7.jpg 250w, img/2x/7.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/8.jpg 250w, img/2x/8.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/9.jpg 250w, img/2x/9.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/10.jpg 250w, img/2x/10.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/11.jpg 250w, img/2x/11.jpg 500w', offset: 0 },
+					{ src: 'img/1x/12.jpg', offset: 0 },
+					{ srcset: 'img/1x/13.jpg 250w, img/2x/13.jpg 500w', offset: 0 },
+					{ srcset: 'img/1x/14.jpg 250w, img/2x/14.jpg 500w', offset: 0 },
+					{ src: 'img/1x/15.jpg', offset: 0 },
+				],
+			}
+		});
+	</script>
+</body>
+</html>

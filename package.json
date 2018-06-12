@@ -1,0 +1,10 @@
+{
+  "name": "vue-blob-lazyload",
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-eslint": "*",
+    "grunt-notify": "*",
+    "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony"
+  }
+}
