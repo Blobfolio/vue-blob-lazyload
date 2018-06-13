@@ -55,7 +55,7 @@ The magic is in the `v-lazy` directive:
 <div v-lazy="{ 'data-hello': 'World' }">Hello World</div>
 ```
 
-As is typical with Vue directives, you can pass arguments as vanilla JS (e.g. inline), or reference existing Vue data and/or methods.
+As with other Vue directives, you can pass arguments as vanilla JS (e.g. inline), or reference existing Vue data and/or methods.
 
 #### Arguments
 
@@ -82,7 +82,7 @@ You're welcome. :)
 
 This directive applies two state classes to bound elements: `is:lazy` and `is:lazy-loaded`. The former is added during Vue setup, and is replaced with the latter as soon as lazy-loading has triggered.
 
-As with other Vue directives, you can pass arguments as vanilla JS (e.g. inline), or reference existing Vue data and/or methods.
+While the plugin does not use either of these for rendering styles, you may certainly do so as desired.
 
 &nbsp;
 
@@ -136,9 +136,9 @@ function myVisibilityCallback(el, ratio) {
 
 #### Classes
 
-This directive applies two state classes to bound elements: `on:screen` and `off:screen`. As you might expect, `on:screen` exists whenever any portion of the element is on-screen, while `off:screen` is reserved for the fully invisible.
+This directive applies two state classes to bound elements: `on:screen` and `off:screen`. As you might expect, `on:screen` exists whenever any portion of an element is visible on the current screen, otherwise it gets the `off:screen` class.
 
-While the plugin does not use either for *styling* purposes, you may feel free to hijack them for that purpose.
+While the plugin does not use either of these for rendering styles, you may certainly do so as desired.
 
 &nbsp;
 
