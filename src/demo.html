@@ -6,6 +6,8 @@
 	<meta content="width=device-width,initial-scale=1,user-scalable=0,minimum-scale=1,maximum-scale=1" name="viewport">
 
 	<style type="text/css">
+		[v-cloak] { display: none; }
+
 		* {
 			margin: 0;
 			padding: 0;
@@ -45,30 +47,6 @@
 			height: auto;
 		}
 
-		.grid--item:after {
-			content: 'lazy src';
-			position: absolute;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			background: rgba(0, 0, 0, .85);
-			color: #fff;
-			font-size: 1.25rem;
-			font-weight: 600;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			opacity: 0;
-			pointer-events: none;
-			transition: opacity .3s ease;
-		}
-
-		.grid--item.has\:srcset:after { content: 'lazy srcset'; }
-		.grid--item:hover:after {
-			opacity: 1;
-		}
-
 		.row {
 			margin: 20px 0;
 			background-color: #ff1493;
@@ -86,6 +64,9 @@
 		.visibility-test-1.on\:screen:after { content: 'On Screen'; }
 		.visibility-test-1.off\:screen:after { content: 'Off Screen'; }
 	</style>
+
+	<script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver,HTMLPictureElement"></script>
+	<script src="https://raw.githubusercontent.com/paulmillr/es6-shim/master/es6-shim.min.js"></script>
 </head>
 <body>
 	<div class="wrapper" id="vue-app" v-cloak>
@@ -102,6 +83,14 @@
 			</div>
 		</div>
 
+		<div class="row">
+			<picture>
+				<source v-lazy="{ srcset: 'img/1x/1.jpg 250w, img/2x/1.jpg 500w' }" type="image/jpeg" sizes="100vw" />
+
+				<img v-lazy="{ src: 'img/1x/1.jpg' }" class="grid--image" alt="Tile" />
+			</picture>
+		</div>
+
 		<div class="row not-image" v-lazy="{ offset: -10, 'data-test': 'Data attribute loaded!' }">Lazy loading can also push attributes to non-image elements as they near the bottom of the screen for the first time.</div>
 
 		<div class="row visibility-test-1" v-screen>Screen Status: </div>
@@ -114,46 +103,22 @@
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 	<script src="js/vue-what-goes-around.js"></script>
 	<script>
+		let images = [];
+		for (let i = 0; i < 16; ++i) {
+			images.push({
+				src: 'img/1x/' + i + '.jpg',
+				srcset: 'img/1x/' + i + '.jpg 250w, img/2x/' + i + '.jpg 500w',
+				offset: 0,
+			});
+		}
+
 		new Vue({
 			el: '#vue-app',
 			data: {
 				lastLoaded: 'The last image has loaded.',
 				showThing: true,
 				percentVisible: '0%',
-				images: [
-					// Offsets are set to zero to make it a little more
-					// obvious images are loading late. In practice, a
-					// positive number (or the default 450) is probably
-					// what you'd want.
-
-					// Also worth noting: the corners for this demo use
-					// src, while the rest use srcset. There's no reason
-					// to use both in one area; this is just to verify
-					// each feature works as expected.
-					{ src: 'img/1x/0.jpg', offset: 0 },
-					{ srcset: 'img/1x/1.jpg 250w, img/2x/1.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/2.jpg 250w, img/2x/2.jpg 500w', offset: 0 },
-					{ src: 'img/1x/3.jpg', offset: 0 },
-					{ srcset: 'img/1x/4.jpg 250w, img/2x/4.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/5.jpg 250w, img/2x/5.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/6.jpg 250w, img/2x/6.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/7.jpg 250w, img/2x/7.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/8.jpg 250w, img/2x/8.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/9.jpg 250w, img/2x/9.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/10.jpg 250w, img/2x/10.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/11.jpg 250w, img/2x/11.jpg 500w', offset: 0 },
-					{ src: 'img/1x/12.jpg', offset: 0 },
-					{ srcset: 'img/1x/13.jpg 250w, img/2x/13.jpg 500w', offset: 0 },
-					{ srcset: 'img/1x/14.jpg 250w, img/2x/14.jpg 500w', offset: 0 },
-					{
-						src: 'img/1x/15.jpg',
-						offset: 0,
-						callback: function(el, args) {
-							console.log(this.lastLoaded);
-							el.classList.add('is:loaded');
-						},
-					},
-				],
+				images: images,
 			},
 			methods: {
 				screenCallback: function(el, ratio) {
