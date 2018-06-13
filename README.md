@@ -57,7 +57,7 @@ The magic is in the `v-lazy` directive:
 
 As with other Vue directives, you can pass arguments as vanilla JS (e.g. inline), or reference existing Vue data and/or methods.
 
-#### Arguments
+### Arguments
 
 There are two (optional) privileged arguments:
 
@@ -72,13 +72,13 @@ Beyond that, the arguments may contain any number of `attribute: value` pairs, w
 
 If you need to do something weird (i.e. not handled by this plugin), just pass a `callback`.
 
-#### Images
+### Images
 
 If using this directive to lazy-load image sources for an `<img>` or `<picture>` element, you *do not* need to redundantly supply the HTML with `src` or `srcset` attributes. This plugin will automatically inject a transparent GIF as a placeholder to keep browsers happy.
 
 You're welcome. :)
 
-#### Classes
+### Classes
 
 This directive applies two state classes to bound elements: `is:lazy` and `is:lazy-loaded`. The former is added during Vue setup, and is replaced with the latter as soon as lazy-loading has triggered.
 
@@ -104,7 +104,7 @@ For reasons that are unclear, HTML/CSS does not provide a simple way to determin
 
 As with other Vue directives, you can pass arguments as vanilla JS (e.g. inline), or reference existing Vue data and/or methods.
 
-#### Arguments
+### Arguments
 
 | Type | Name | Description |
 | ---- | ---- | ----------- |
@@ -134,7 +134,7 @@ function myVisibilityCallback(el, ratio) {
 }
 ```
 
-#### Classes
+### Classes
 
 This directive applies two state classes to bound elements: `on:screen` and `off:screen`. As you might expect, `on:screen` exists whenever any portion of an element is visible on the current screen, otherwise it gets the `off:screen` class.
 
