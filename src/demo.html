@@ -68,31 +68,58 @@
 		.grid--item:hover:after {
 			opacity: 1;
 		}
+
+		.row {
+			margin: 20px 0;
+			background-color: #ff1493;
+			color: white;
+			padding: 50px;
+			max-width: 1000px;
+		}
+
+		.not-image {
+			opacity: 0;
+			transition: opacity .5s ease;
+		}
+		.not-image.is\:lazy-loaded { opacity: 1; }
+
+		.visibility-test-1.on\:screen:after { content: 'On Screen'; }
+		.visibility-test-1.off\:screen:after { content: 'Off Screen'; }
 	</style>
 </head>
 <body>
 	<div class="wrapper" id="vue-app" v-cloak>
-		<h1 id="title">vue-blob-lazyload</h1>
+		<h1 id="title">What Goes Around</h1>
 
 		<p id="spacer">
 			Images will begin loading as you scroll.<br>
 			Click <a href="https://github.com/Blobfolio/vue-blob-lazyload" target="_blank" rel="noopener">here</a> to return to the source code.
 		</p>
 
-		<div class="grid">
+		<div class="grid" v-cloak>
 			<div v-for="image in images" class="grid--item" v-bind:class="{ 'has:src' : image.src, 'has:srcset' : image.srcset }">
 				<img sizes="25vw" v-lazy="image" class="grid--image" alt="Tile" />
 			</div>
 		</div>
 
+		<div class="row not-image" v-lazy="{ offset: -10, 'data-test': 'Data attribute loaded!' }">Lazy loading can also push attributes to non-image elements as they near the bottom of the screen for the first time.</div>
+
+		<div class="row visibility-test-1" v-screen>Screen Status: </div>
+
+		<div v-if="showThing" class="row visibility-test-2" v-screen="{ callback: screenCallback }" v-bind:style="'opacity: ' + parseInt(percentVisible) / 100">Percentage visible: {{ percentVisible }}</div>
+
+		<p>Because this is directive-driven, elements can come and go willynilly. Click <a href="#" v-on:click.prevent="showThing = !showThing" style="color: #ff1493">here</a> to toggle the above element's inclusion on the page.</p>
 	</div><!--#vue-app-->
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-	<script src="js/vue-blob-lazyload.js"></script>
+	<script src="js/vue-what-goes-around.js"></script>
 	<script>
 		new Vue({
 			el: '#vue-app',
 			data: {
+				lastLoaded: 'The last image has loaded.',
+				showThing: true,
+				percentVisible: '0%',
 				images: [
 					// Offsets are set to zero to make it a little more
 					// obvious images are loading late. In practice, a
@@ -118,8 +145,20 @@
 					{ src: 'img/1x/12.jpg', offset: 0 },
 					{ srcset: 'img/1x/13.jpg 250w, img/2x/13.jpg 500w', offset: 0 },
 					{ srcset: 'img/1x/14.jpg 250w, img/2x/14.jpg 500w', offset: 0 },
-					{ src: 'img/1x/15.jpg', offset: 0 },
+					{
+						src: 'img/1x/15.jpg',
+						offset: 0,
+						callback: function(el, args) {
+							console.log(this.lastLoaded);
+							el.classList.add('is:loaded');
+						},
+					},
 				],
+			},
+			methods: {
+				screenCallback: function(el, ratio) {
+					this.percentVisible = Math.round(ratio * 100) + '%';
+				},
 			}
 		});
 	</script>

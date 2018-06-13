@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 			},
 			my_target: {
 				files: {
-					'vue-blob-lazyload.min.js': ['src/js/vue-blob-lazyload.js'],
+					'vue-what-goes-around.min.js': ['src/js/vue-what-goes-around.js'],
 				}
 			}
 		},
