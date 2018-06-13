@@ -270,7 +270,9 @@
 					}
 
 					// Finally, observe it!
-					observersLazy[rootMargin].observe(el);
+					Vue.nextTick(function() {
+						observersLazy[rootMargin].observe(el);
+					});
 				},
 			});
 
@@ -307,7 +309,9 @@
 					}
 
 					// Finally, observe it!
-					observersScreen.observe(el);
+					Vue.nextTick(function() {
+						observersScreen.observe(el);
+					});
 				},
 			});
 
