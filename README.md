@@ -15,7 +15,13 @@ What Goes Around is a dual-purpose visibility and lazy-loading plugin for [Vue.j
 
 ## Installation
 
-What Goes Around is compatible with all major modern web browsers and IE 11. Aside from [Vue.js](https://vuejs.org/), there are no third-party requirements.
+Aside from [Vue.js](https://vuejs.org/), there are no third-party requirements.
+
+What Goes Around is compatible with all major modern web browsers.
+
+This plugin will also work with ~~the browser that just won't die~~ IE 11 if you include an [IntersectionObserver polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill).
+
+This plugin does make use of some ES6 markup like `let` and `const`. If your project needs to support *old* browsers, you will need to first transpile `vue-what-goes-around.min.js` to ES5 with a tool like [Babel](https://babeljs.io/), then serve that copy to visitors.
 
 To install it, simply drop a link to the script in your code:
 
@@ -77,6 +83,8 @@ If you need to do something weird (i.e. not handled by this plugin), just pass a
 If using this directive to lazy-load image sources for an `<img>` or `<picture>` element, you *do not* need to redundantly supply the HTML with `src` or `srcset` attributes. This plugin will automatically inject a transparent GIF as a placeholder to keep browsers happy.
 
 You're welcome. :)
+
+**Note:** If lazy-loading the sources for a `<picture>` element, you should apply separate `v-lazy` directives to each `<source>` and the `<img>` tag, otherwise strange and wild things might happen.
 
 ### Classes
 
