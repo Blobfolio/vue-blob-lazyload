@@ -384,7 +384,7 @@
 					return;
 				}
 
-				const response = fetch(url)
+				fetch(url)
 					.then(function(response) {
 						return response.text();
 					})
