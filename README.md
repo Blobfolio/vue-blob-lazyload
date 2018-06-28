@@ -19,7 +19,7 @@ Aside from [Vue.js](https://vuejs.org/), there are no third-party requirements.
 
 What Goes Around is compatible with all major modern web browsers.
 
-This plugin will also work with ~~the browser that just won't die~~ IE 11 if you include an [IntersectionObserver polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill).
+This plugin will also work with ~~the browser that just won't die~~ IE 11 if you include an [polyfill](https://polyfill.io/v2/polyfill.min.js?features=es6,HTMLPictureElement,IntersectionObserver,IntersectionObserverEntry,fetch,Element.prototype.classList) like the one used in the demo.
 
 This plugin does make use of some ES6 markup like `let` and `const`. If your project needs to support *old* browsers, you will need to first transpile `vue-what-goes-around.min.js` to ES5 with a tool like [Babel](https://babeljs.io/), then serve that copy to visitors.
 
@@ -95,7 +95,7 @@ But only if the SVG is inlined in the HTML document.
 
 Inlining SVGs can have a major performance impact on your DOMReady and page load times, both because of the increased document size, but also because SVG markup really stresses encoders like Gzip and Brotli.
 
-What Goes Around includes an experimental `inline` option you can use to point an `<svg>` element to an external source. Once lazy loading triggers, that remote file will be downloaded and parsed, its attributes and `innerHTML` copied over to the target element. Remote attribute values take priority — they'll blow away your local ones — however classes will be merged.
+What Goes Around includes an experimental `inline` option you can use to point an `<svg>` element to an external source. Once lazy loading triggers, that remote file will be downloaded and parsed, its attributes and childNodes copied over to the target element. Remote attribute values take priority — they'll blow away your local ones — however classes will be merged.
 
 Let's look at an example:
 
@@ -115,7 +115,7 @@ Let's look at an example:
 
 Once inserted, the browser should treat it like it was always there, applying any styles, etc. With that in mind, try not to link to malicious sources, because bad things could happen once they're loaded into the page. Haha.
 
-This feature is experimental and requires further testing. One thing to note is that this requires browser support for `async`, `await`, and `fetch()`. All modern browsers have that base covered, but if you need to support anything old, you'll need some polyfills.
+This feature requires browser support for `fetch()` and ES6 promises. To make it work in IE, you'll also need a `classList` polyfill as for some reason that browser does not support classLists on SVG elements. Haha.
 
 ### Classes
 
