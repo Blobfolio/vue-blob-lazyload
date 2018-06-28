@@ -378,33 +378,26 @@
 			 * @param {DOMElement} el Element.
 			 * @returns {void} Nothing.
 			 */
-			const _inlineSVG = async function(url, el) {
+			const _inlineSVG = function(url, el) {
 				// This shouldn't have changed, but just in case.
 				if ('SVG' !== el.tagName.toUpperCase()) {
 					return;
 				}
 
-				const response = await fetch(url);
-				let data = await response.text();
+				const response = fetch(url)
+					.then(function(response) {
+						return response.text();
+					})
+					.then(function(data) {
+						// Parse it like it's hot.
+						const parser = new DOMParser();
+						const parsed = parser.parseFromString(data, 'image/svg+xml');
+						let svg = parsed.getElementsByTagName('svg');
+						if (svg.length) {
+							svg = svg[0];
 
-				// Ignore bad responses.
-				if (!response.ok) {
-					return;
-				}
-
-				// Parse it like it's hot.
-				const parser = new DOMParser();
-				const parsed = parser.parseFromString(data, 'image/svg+xml');
-
-				// The file might contain other tags; we will pull data
-				// from the first SVG found.
-				if ('undefined' !== typeof parsed.children) {
-					const parsedLen = parsed.children.length;
-					for (let i = 0; i < parsedLen; ++i) {
-						// We found it!
-						if ('SVG' === parsed.children[i].tagName.toUpperCase()) {
 							// Let's copy over attributes.
-							const attr = parsed.children[i].attributes;
+							const attr = svg.attributes;
 							const attrLen = attr.length;
 							for (let j = 0; j < attrLen; ++j) {
 								if (attr[j].specified) {
@@ -422,11 +415,11 @@
 							}
 
 							// Transfer the innerHTML.
-							el.innerHTML = parsed.children[i].innerHTML;
-							break;
+							while (svg.childNodes.length) {
+								el.appendChild(svg.childNodes[0]);
+							}
 						}
-					}
-				}
+					});
 			};
 
 			/**
