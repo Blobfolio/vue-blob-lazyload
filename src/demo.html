@@ -61,12 +61,17 @@
 		}
 		.not-image.is\:lazy-loaded { opacity: 1; }
 
+		svg {
+			display: block;
+			max-width: 100%;
+			height: auto;
+		}
+
 		.visibility-test-1.on\:screen:after { content: 'On Screen'; }
 		.visibility-test-1.off\:screen:after { content: 'Off Screen'; }
 	</style>
 
-	<script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver,HTMLPictureElement"></script>
-	<script src="https://raw.githubusercontent.com/paulmillr/es6-shim/master/es6-shim.min.js"></script>
+	<script src="https://polyfill.io/v2/polyfill.min.js?features=es6,HTMLPictureElement,IntersectionObserver,IntersectionObserverEntry,fetch"></script>
 </head>
 <body>
 	<div class="wrapper" id="vue-app" v-cloak>
@@ -98,10 +103,16 @@
 		<div v-if="showThing" class="row visibility-test-2" v-screen="{ callback: screenCallback }" v-bind:style="'opacity: ' + parseInt(percentVisible) / 100">Percentage visible: {{ percentVisible }}</div>
 
 		<p>Because this is directive-driven, elements can come and go willynilly. Click <a href="#" v-on:click.prevent="showThing = !showThing" style="color: #ff1493">here</a> to toggle the above element's inclusion on the page.</p>
+
+		<div class="row">
+			<svg width="832" height="217" viewbox="0 0 832.016 217.885" v-lazy="{ offset: -10, inline: 'https://raw.githubusercontent.com/Blobfolio/vue-what-goes-around/master/src/img/blobfolio.svg' }"></svg>
+
+			<p style="margin-top: 1em;">By injecting the SVG source code after load, we're able to treat it kind of like an <code>img</code> tag, except that style rules are honored.</p>
+		</div>
 	</div><!--#vue-app-->
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-	<script src="js/vue-what-goes-around.js"></script>
+	<script src="../vue-what-goes-around.min.js"></script>
 	<script>
 		let images = [];
 		for (let i = 0; i < 16; ++i) {

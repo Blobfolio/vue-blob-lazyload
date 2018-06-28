@@ -68,11 +68,19 @@
 						// Apply any attributes.
 						if ('object' === typeof entries[i].target.__lazy_attr__) {
 							const argsKeys = Object.keys(entries[i].target.__lazy_attr__);
-							for (let j = 0; j < argsKeys.length; ++j) {
-								entries[i].target.setAttribute(
-									argsKeys[j],
-									entries[i].target.__lazy_attr__[argsKeys[j]]
-								);
+							const argsLen = argsKeys.length;
+							for (let j = 0; j < argsLen; ++j) {
+								// Inline something?
+								if ('inline' === argsKeys[j]) {
+									_inlineSVG(entries[i].target.__lazy_attr__[argsKeys[j]], entries[i].target);
+								}
+								// Just a swap?
+								else {
+									entries[i].target.setAttribute(
+										argsKeys[j],
+										entries[i].target.__lazy_attr__[argsKeys[j]]
+									);
+								}
 							}
 							delete entries[i].target.__lazy_attr__;
 						}
@@ -175,7 +183,8 @@
 
 					// Loop through and see what we got.
 					const argsKeys = Object.keys(args);
-					for (let i = 0; i < argsKeys.length; ++i) {
+					const argsLen = argsKeys.length;
+					for (let i = 0; i < argsLen; ++i) {
 						// If the key is obviously bad, get rid of it.
 						if (!/^[a-zA-Z_:][-a-zA-Z0-9_:.]*$/.test(argsKeys[i])) {
 							continue;
@@ -216,12 +225,25 @@
 								};
 							}
 							break;
+						// Inline is not really a property either.
+						case 'inline':
+							if (
+								('SVG' === el.tagName.toUpperCase()) &&
+								('string' === valueType) &&
+								args[argsKeys[i]]
+							) {
+								let url = _sanitizeUrl(args[argsKeys[i]]);
+								if (url && /\.svg$/.test(url)) {
+									el.__lazy_attr__.inline = url;
+								}
+							}
+							break;
 						// Everything else we just copy!
 						default:
 							// Copy anything else that's flat.
 							if (
 								('function' !== valueType) &&
-								supportsAttr(el.tagName, argsKeys[i])
+								supportsAttr(el.tagName.toUpperCase(), argsKeys[i])
 							) {
 								el.__lazy_attr__[argsKeys[i]] = args[argsKeys[i]];
 							}
@@ -231,11 +253,11 @@
 					// Add a blank image? This is the only real hand-
 					// holding the plugin offers.
 					if (
-						('IMG' === el.tagName) ||
+						('IMG' === el.tagName.toUpperCase()) ||
 						(
-							('SOURCE' === el.tagName) &&
+							('SOURCE' === el.tagName.toUpperCase()) &&
 							el.parentNode &&
-							('PICTURE' === el.parentNode.tagName)
+							('PICTURE' === el.parentNode.tagName.toUpperCase())
 						)
 					) {
 						// Populate src attribute.
@@ -348,6 +370,79 @@
 
 			// Keep track of tag/attribute combinations we have checked.
 			let supportedAttr = {};
+
+			/**
+			 * Async Fetch
+			 *
+			 * @param {string} url URL.
+			 * @param {DOMElement} el Element.
+			 * @returns {void} Nothing.
+			 */
+			const _inlineSVG = async function(url, el) {
+				// This shouldn't have changed, but just in case.
+				if ('SVG' !== el.tagName.toUpperCase()) {
+					return;
+				}
+
+				const response = await fetch(url);
+				let data = await response.text();
+
+				// Ignore bad responses.
+				if (!response.ok) {
+					return;
+				}
+
+				// Parse it like it's hot.
+				const parser = new DOMParser();
+				const parsed = parser.parseFromString(data, 'image/svg+xml');
+
+				// The file might contain other tags; we will pull data
+				// from the first SVG found.
+				if ('undefined' !== typeof parsed.children) {
+					const parsedLen = parsed.children.length;
+					for (let i = 0; i < parsedLen; ++i) {
+						// We found it!
+						if ('SVG' === parsed.children[i].tagName.toUpperCase()) {
+							// Let's copy over attributes.
+							const attr = parsed.children[i].attributes;
+							const attrLen = attr.length;
+							for (let j = 0; j < attrLen; ++j) {
+								if (attr[j].specified) {
+									// Merge classes.
+									if ('class' === attr[j].name) {
+										let classes = attr[j].value.replace(/\s+/g, ' ').trim().split(' ');
+										for (let k = 0; k < classes.length; ++k) {
+											el.classList.add(classes[k]);
+										}
+									}
+									else {
+										el.setAttribute(attr[j].name, attr[j].value);
+									}
+								}
+							}
+
+							// Transfer the innerHTML.
+							el.innerHTML = parsed.children[i].innerHTML;
+							break;
+						}
+					}
+				}
+			};
+
+			/**
+			 * Format URL
+			 *
+			 * @param {string} url URL.
+			 * @returns {string} URL.
+			 */
+			const _sanitizeUrl = function(url) {
+				let a = document.createElement('a');
+				a.href = url;
+				if (a.href) {
+					return a.href;
+				}
+				return false;
+			};
 
 			// --------------------------------------------------------- end helpers
 

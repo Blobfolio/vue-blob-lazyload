@@ -65,12 +65,13 @@ As with other Vue directives, you can pass arguments as vanilla JS (e.g. inline)
 
 ### Arguments
 
-There are two (optional) privileged arguments:
+There are three (optional) privileged arguments:
 
 | Type | Name | Description |
 | ---- | ---- | ----------- |
 | *int* | **offset** | Lazy loading is triggered when an element is this number of pixels from the visible screen. If not supplied, `450px` is used. |
 | *function* | **callback** | A callback function to execute once lazy-loading has commenced, called with the original Vue scope, and passed two arguments: the element and the arguments you passed in the first place. |
+| *string* | **inline** | Lazy-load, parse, and inline an SVG. See the SVG section below for more information. |
 
 Beyond that, the arguments may contain any number of `attribute: value` pairs, which will be magically set once lazy-loading has triggered. With the exception of HTML5 `data-xyz` attributes, the browser must recognize the attribute as part of the tag's prototype or it will be ignored.
 
@@ -85,6 +86,36 @@ If using this directive to lazy-load image sources for an `<img>` or `<picture>`
 You're welcome. :)
 
 **Note:** If lazy-loading the sources for a `<picture>` element, you should apply separate `v-lazy` directives to each `<source>` and the `<img>` tag, otherwise strange and wild things might happen.
+
+### SVG
+
+One of the main benefits of the [SVG](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics) "image" format is that it is code, and as such, can be styled with CSS and/or manipulated with Javascript.
+
+But only if the SVG is inlined in the HTML document.
+
+Inlining SVGs can have a major performance impact on your DOMReady and page load times, both because of the increased document size, but also because SVG markup really stresses encoders like Gzip and Brotli.
+
+What Goes Around includes an experimental `inline` option you can use to point an `<svg>` element to an external source. Once lazy loading triggers, that remote file will be downloaded and parsed, its attributes and `innerHTML` copied over to the target element. Remote attribute values take priority — they'll blow away your local ones — however classes will be merged.
+
+Let's look at an example:
+
+```html
+<!-- Start with an empty <svg> on the page with a v-lazy
+     directive. -->
+<svg v-lazy="{ inline: 'http://domain.com/image.svg' }"></svg>
+
+<!-- When Vue mounts, the DOM will show this: -->
+<svg class="is:lazy"></svg>
+
+<!-- Once the lazy loading has finished, you'll get this: -->
+<svg width="50" height="50" viewbox="0 0 50 50" class="is:lazy-loaded" xmlns="http://www.w3.org/2000/svg">
+  <path fill="currentColor">…
+</svg>
+```
+
+Once inserted, the browser should treat it like it was always there, applying any styles, etc. With that in mind, try not to link to malicious sources, because bad things could happen once they're loaded into the page. Haha.
+
+This feature is experimental and requires further testing. One thing to note is that this requires browser support for `async`, `await`, and `fetch()`. All modern browsers have that base covered, but if you need to support anything old, you'll need some polyfills.
 
 ### Classes
 
