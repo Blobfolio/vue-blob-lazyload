@@ -17,7 +17,7 @@ command -v uglifyjs >/dev/null 2>&1 || {
 
 
 # Just one file.
-uglifyjs -c --ecma 6 -o "vue-what-goes-around.min.js" -- "src/js/vue-what-goes-around.js"
+uglifyjs -c -o "vue-what-goes-around.min.js" -- "src/js/vue-what-goes-around.js"
 echo -e "\033[2mminifying:\033[0m vue-what-goes-around.min.js"
 
 
